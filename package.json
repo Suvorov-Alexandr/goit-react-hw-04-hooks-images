@@ -2,13 +2,20 @@
   "name": "react-base",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://Suvorov-Alexandr.github.io/goit-react-hw-03-image-finder",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
+    "gh-pages": "^3.2.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-hot-toast": "^2.2.0",
+    "react-icons": "^4.3.1",
+    "react-loader-spinner": "^5.1.0",
     "react-scripts": "5.0.0",
+    "react-scroll": "^1.8.4",
+    "simple-react-lightbox": "^3.6.6",
     "styled-components": "^5.3.3",
     "web-vitals": "^2.1.2"
   },
@@ -17,7 +24,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -46,7 +55,7 @@
     "prop-types": "^15.8.0"
   },
   "lint-staged": {
-    "*.js": "eslint --cache --fix",
-    "*.{js,css,md}": "prettier --write"
+    "*.{js,jsx}": "eslint --cache --fix",
+    "*.{js,jsx,css,md}": "prettier --write"
   }
 }
