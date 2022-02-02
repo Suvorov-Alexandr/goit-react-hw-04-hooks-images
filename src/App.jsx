@@ -1,6 +1,6 @@
 import "./AppContainer.styled.jsx";
 import Container from "./AppContainer.styled.jsx";
-import { Component } from "react";
+import { useState, useEffect } from "react";
 import fetchImages from "./services/Api";
 import Button from "./components/Button";
 import ImageGallery from "./components/ImageGallery";
@@ -11,69 +11,56 @@ import toast from "react-hot-toast";
 
 const scroll = Scroll.animateScroll;
 
-class App extends Component {
-  state = {
-    images: [],
-    query: "",
-    page: 1,
-    sourceModalImage: "",
-    isLoading: false,
-    showModal: false,
-  };
+function App() {
+  const [images, setImages] = useState([]);
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
-  componentDidUpdate(_, prevState) {
-    const { query, page } = this.state;
-
-    if (prevState.query === query && prevState.page === page) {
+  useEffect(() => {
+    if (!query) {
       return;
     }
-    this.setState({ isLoading: true });
+    setIsLoading(true);
 
-    fetchImages(this.state)
+    fetchImages(query, page)
       .then(({ hits }) => {
-        const images = [...this.state.images, ...hits];
-        this.setState({ images });
+        setImages((prevState) => [...prevState, ...hits]);
 
         if (hits.length === 0) {
-          toast.error(
-            `Your search "${this.state.query}" did not match any listings.`
-          );
+          toast.error(`Your search "${query}" did not match any listings.`);
         }
 
-        if (this.state.page !== 1) {
+        if (page !== 1) {
           scroll.scrollMore(250);
         }
       })
       .catch((response) => {
         console.log(response);
       })
-      .finally(() => this.setState({ isLoading: false }));
-  }
+      .finally(() => setIsLoading(false));
+  }, [page, query]);
 
-  handleOnSubmitSearch = (query) => {
-    this.setState({ query, page: 1, images: [] });
+  const handleOnSubmitSearch = (query) => {
+    setQuery(query);
+    setPage(1);
+    setImages([]);
   };
 
-  handlerOnClickButton = () => {
-    const page = this.state.page + 1;
-    this.setState({ page });
+  const handlerOnClickButton = () => {
+    setPage((prevState) => prevState + 1);
   };
 
-  render() {
-    const { images, isLoading } = this.state;
-    const { handleOnSubmitSearch, handlerOnClickButton } = this;
-
-    return (
-      <Container>
-        <Searchbar onSubmit={handleOnSubmitSearch}></Searchbar>
-        <ImageGallery images={images} />
-        {isLoading && <Loader />}
-        {images.length !== 0 && isLoading !== true && (
-          <Button onLoadMoreClick={handlerOnClickButton} />
-        )}
-      </Container>
-    );
-  }
+  return (
+    <Container>
+      <Searchbar onSubmit={handleOnSubmitSearch}></Searchbar>
+      <ImageGallery images={images} />
+      {isLoading && <Loader />}
+      {images.length !== 0 && isLoading !== true && (
+        <Button onLoadMoreClick={handlerOnClickButton} />
+      )}
+    </Container>
+  );
 }
 
 export default App;

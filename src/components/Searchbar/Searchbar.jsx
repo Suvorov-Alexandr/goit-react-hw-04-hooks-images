@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 import toast, { Toaster } from "react-hot-toast";
 import { MdImageSearch } from "react-icons/md";
@@ -10,71 +10,62 @@ import {
   SearchFormInput,
 } from "./Searchbar.styled";
 
-class Searchbar extends Component {
-  state = {
-    query: "",
-  };
+function Searchbar({ onSubmit }) {
+  const [query, setQuery] = useState("");
 
-  handleSubmit = (evt) => {
+  const handleSubmit = (evt) => {
     evt.preventDefault();
 
-    const query = this.state.query.trim();
+    const trimmedQuerySpaces = query.trim();
 
-    if (!query) {
+    if (!trimmedQuerySpaces) {
       toast.error("Oops... Please enter a search term!");
       return;
     }
-
-    this.props.onSubmit(query);
-    this.reset();
+    onSubmit(trimmedQuerySpaces);
+    reset();
   };
 
-  handleInput = (evt) => {
-    const query = evt.currentTarget.value;
-    this.setState({ query });
+  const handleInput = (evt) => {
+    setQuery(evt.currentTarget.value);
   };
 
-  reset = () => {
-    this.setState({ query: "" });
+  const reset = () => {
+    setQuery("");
   };
 
-  render() {
-    const { query } = this.state;
-    const { handleInput, handleSubmit } = this;
+  return (
+    <SearchbarHeader>
+      <SearchForm onSubmit={handleSubmit}>
+        <SearchFormButton type="submit">
+          <div>
+            <Toaster
+              position="top-right"
+              reverseOrder={true}
+              toastOptions={{
+                style: {
+                  border: "2px solid red",
+                  padding: "18px",
+                  fontSize: "16px",
+                },
+              }}
+            />
+          </div>
+          <MdImageSearch size="2em" />
+          <SearchFormButtonLabel>Search</SearchFormButtonLabel>
+        </SearchFormButton>
 
-    return (
-      <SearchbarHeader>
-        <SearchForm onSubmit={handleSubmit}>
-          <SearchFormButton type="submit">
-            <div>
-              <Toaster
-                position="top-right"
-                reverseOrder={true}
-                toastOptions={{
-                  style: {
-                    border: "2px solid red",
-                    padding: "18px",
-                    fontSize: "16px",
-                  },
-                }}
-              />
-            </div>
-            <MdImageSearch size="2em" />
-            <SearchFormButtonLabel>Search</SearchFormButtonLabel>
-          </SearchFormButton>
-
-          <SearchFormInput
-            onChange={handleInput}
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            value={query}
-          />
-        </SearchForm>
-      </SearchbarHeader>
-    );
-  }
+        <SearchFormInput
+          onChange={handleInput}
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          value={query}
+        />
+      </SearchForm>
+    </SearchbarHeader>
+  );
 }
 
 Searchbar.propTypes = {
